@@ -1,23 +1,34 @@
 const express = require('express');
-const cors = require('cors');
-// 1. Import the routes from our new file
-const apiRoutes = require('./routes/api');
-
+const path = require('path'); // Import the 'path' module
 const app = express();
-const PORT = 3001;
+const port = process.env.PORT || 3001; // Use Render's port or 3001 for local
 
-// --- Middleware ---
-app.use(cors());
+// Middleware to parse JSON bodies
 app.use(express.json());
 
-// --- API Routes ---
-// 2. This is the crucial new line.
-// It tells the server: for any request that starts with '/api',
-// use the logic defined in our apiRoutes file.
-app.use('/api', apiRoutes);
+// --- THIS IS THE NEW PART ---
+// Serve the static files from the React app's build directory
+app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+// --------------------------
 
-// --- Start the Server ---
-app.listen(PORT, () => {
-  console.log(`Server is running successfully on http://localhost:${PORT}`);
+// Your API route for feedback
+app.post('/api/feedback', (req, res) => {
+  const { orderId, rating, comments } = req.body;
+  console.log('--- DRIVER FEEDBACK RECEIVED ---');
+  console.log(`Order ID: ${orderId}`);
+  console.log(`Rating: ${rating}`);
+  console.log(`Comments: ${comments}`);
+  res.status(200).json({ message: 'Feedback received successfully' });
 });
 
+// --- THIS IS ALSO NEW ---
+// Handles any requests that don't match the API route
+// This sends the main React app page for any other URL
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
+});
+// ----------------------
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});

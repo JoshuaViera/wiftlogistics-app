@@ -3,11 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "install-server": "npm install --prefix server",
-    "install-client": "npm install --prefix client",
-    "install": "npm run install-server && npm run install-client",
-    "server": "node server/server.js",
-    "client": "npm start --prefix client",
+    "install": "npm install --prefix server && npm install --prefix client",
+    "build": "npm run build --prefix client",
+    "start": "node server/server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "devDependencies": {
